@@ -1,0 +1,58 @@
+TITLE:: BufPlayGui
+summary:: Simple GUI object for playing n-channel buffers with varible rate control
+categories:: Undocumented classes
+related:: Classes/SoundFileView, Classes/SoundFile
+​
+DESCRIPTION::
+BufPlayGui relies on keyboard shortcuts
+LIST::
+##spacebar : play
+##z : zoom to selection
+##shift + z : zoom out by factor of 10
+##more to come
+::
+
+The three number boxes are display only and refer to the start and end of the selection in frames, and the duration of the selection in seconds.
+
+image::BufPlayGuiHOA3.png::
+
+CLASSMETHODS::
+METHOD:: new
+argument:: server
+Server to run the instance of BufPlayGui
+argument:: group
+Group to place the instance of BufPlayGui
+argument:: outbus
+output bus of BufPlayGui
+​​
+INSTANCEMETHODS::
+
+METHOD:: getStartFrame
+get start frame of selection - useful for processing later in the signal path
+​
+METHOD:: getEndFrame
+get end frame of selection- useful for processing later in the signal path
+
+METHOD:: getDurFrames
+get duration of selection in frames - useful for processing later in the signal path
+
+METHOD:: getDur
+get duration in seconds - useful for processing later in the signal path
+​​
+EXAMPLES::
+code::
+
+b = BufPlayGui.new(s, ~encodingGroup, ~hoaBusDict[\bufPlayGui])
+
+~hoaBusDict.add(\bufPlayGui -> Bus.audio(s, 1));
+
+SynthDef(\bufIn, {
+	var sig = In.ar(~hoaBusDict[\bufPlayGui], 1);
+	sig = HoaEncodeDirection.ar(sig, LFNoise2.kr(2).range(-pi, pi), \phi.kr(0), 1.5);
+	Out.ar(\out.kr(0), sig)
+}).add;
+
+x = Synth(\bufIn, args: [\out, ~hoaBusDict[\encodingBus]], target: ~encodingGroup, addAction: 'addToTail')
+x.free
+::
+​
