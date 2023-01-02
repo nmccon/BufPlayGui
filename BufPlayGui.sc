@@ -184,6 +184,10 @@ BufPlayGui {
 		^ boxes[1].value - boxes[0].value
 	}
 
+	getBufnum {
+		^buffer.bufnum
+	}
+
 	getSynthName {
 		^ play.defName
 	}
