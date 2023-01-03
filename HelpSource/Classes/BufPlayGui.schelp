@@ -1,0 +1,61 @@
+TITLE:: BufPlayGui
+summary:: Simple GUI object for playing n-channel buffers with varible rate control
+categories:: Undocumented classes
+related:: Classes/SoundFileView, Classes/SoundFile
+​
+DESCRIPTION::
+BufPlayGui relies on keyboard shortcuts with the eventual aim of making it as modal as possible
+LIST::
+##spacebar : play
+##z : zoom to selection
+##shift + z : zoom out by factor of 10
+##more to come
+::
+Load an audio file from disk using the load button. Press the control button to show and hide a simple control panel with basic controls for playback rate and dB scaling.
+The three number boxes are display only and refer to the start and end of the selection in frames, and the duration of the selection in seconds.
+​​​
+CLASSMETHODS::
+​
+METHOD:: new
+argument:: server
+Server to run the instance of BufPlayGui
+argument:: group
+Group to place the instance of BufPlayGui
+argument:: outbus
+output bus of BufPlayGui
+​
+INSTANCEMETHODS::
+​
+METHOD:: getSynthName
+Return the defName of the internal player function
+​​
+METHOD:: getNodeID
+Return the NodeID of the internal player function
+​
+METHOD:: getBufnum
+Return the buffer number of selected file
+​
+METHOD:: getStartFrame
+Return start frame of selection - useful for processing later in the signal path
+​
+METHOD:: getEndFrame
+Return end frame of selection- useful for processing later in the signal path
+​
+METHOD:: getDur
+Return duration in seconds - useful for processing later in the signal path
+​
+METHOD:: getDurFrames
+Return duration of selection in frames - useful for processing later in the signal path
+
+METHOD:: group
+Get or set the group for the BufPlayGui instance
+
+METHOD:: outbus
+Get or set the output bus for the BufPlayGui instance
+​
+EXAMPLES::
+​
+code::
+~bp = BufPlayGui.new(s, ~encodingGroup, ~hoaBusDict[\encodingBus])
+::
+​
