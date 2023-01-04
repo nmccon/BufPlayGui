@@ -1,5 +1,5 @@
 BufPlayGui {
-	var server, <>group, <>outbus;
+	var server, <>group, <>outbus, <>syncbus;
 	var win, sfv, open, boxes, controlView, controlBtn;
 	var volKnob, volNum, rateKnob, rateNum;
 	var buffer, player, play, responder;
@@ -7,14 +7,14 @@ BufPlayGui {
 	var dbSpec, rateSpec;
 	var stringCol, backCol;
 
-	*new { |server, group, outbus|
+	*new { |server, group, outbus, syncbus|
 		var serverWarning = false;
 		if( Server.default.serverRunning.not {
 			"Server not running".warn;
 			serverWarning = true
 		});
 
-		^super.newCopyArgs(server, group, outbus).prInitGUI;
+		^super.newCopyArgs(server, group, outbus, syncbus).prInitGUI;
 	}
 
 	prInitGUI {
@@ -198,9 +198,11 @@ BufPlayGui {
 
 	player {
 		^{	|lo = 0, hi = 1, amp = 1, rate = 1|
-			var phasor;
+			var phasor, derivative;
 			phasor = Phasor.ar(0, rate * BufRateScale.kr(buffer), lo * BufFrames.kr(buffer), hi * BufFrames.ir(buffer));
+			derivative = HPZ1.ar(phasor);
 			SendReply.kr(Impulse.kr(50), '/pointer', [A2K.kr(phasor)]);
+			Out.ar(syncbus, derivative);
 			Out.ar(outbus, BufRd.ar(sf.numChannels, buffer, phasor, 0) * amp.dbamp);
 		}
 	}
@@ -221,7 +223,6 @@ BufPlayGui {
 
 /*
 TODO
-send trigger each time Phasor resets/loop starts HPZ1- sync with other processes later in signal path https://scsynth.org/t/triggering-envelope-with-phasor/6093/4
 keyboard shortcuts e.g. H for show hide controls
 possibly add envelope view for creating volume envs on the view using StackLayout? - hard!
 time grid e.g. SFPlayer - even harder!

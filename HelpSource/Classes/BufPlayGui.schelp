@@ -23,6 +23,8 @@ argument:: group
 Group to place the instance of BufPlayGui
 argument:: outbus
 output bus of BufPlayGui
+argument:: syncbus
+output bus to write trigger signal. This is useful for syncing playback with other processes.
 ​
 INSTANCEMETHODS::
 ​
