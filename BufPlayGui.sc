@@ -48,6 +48,9 @@ BufPlayGui {
 				},
 				90, {
 					view.zoom(10);
+				},
+				104, {
+					if(controlBtn.value==0, {controlBtn.valueAction_(1)}, if(controlBtn.value==1, {controlBtn.valueAction_(0)}))
 				}
 			);
 		};
@@ -121,7 +124,14 @@ BufPlayGui {
 				[ [rateNum ]],
 				[ [TextField().string_("Rate").background_(Color.clear).stringColor_(stringCol).enabled_(false).align_(\center)]],
 			)
-		);
+		)
+		.keyDownAction_{|view, char, modifiers, unicode, keycode, key|
+			unicode.switch(
+				104, {
+					if(controlBtn.value==0, {controlBtn.valueAction_(1)}, if(controlBtn.value==1, {controlBtn.valueAction_(0)}))
+				}
+			)
+		};
 
 		//make volume and playback rate visible
 		controlBtn = Button()
@@ -223,16 +233,13 @@ BufPlayGui {
 
 /*
 TODO
-keyboard shortcuts e.g. H for show hide controls
+
 possibly add envelope view for creating volume envs on the view using StackLayout? - hard!
-time grid e.g. SFPlayer - even harder!
+time grid - even harder!
 maybe a random button to select audio file at random from a folder
 filter section in the control window
 call playfunc when changing selection instead of replaying every new selection
-consider using PlayBufCF??
-mono option - useful for ATK HoaEncodeDirection
 move varibles into initGUI method
 MIDI learn function for controls
 more control options
-addToHead/tail option for group
 */

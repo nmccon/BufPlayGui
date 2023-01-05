@@ -9,7 +9,7 @@ LIST::
 ##spacebar : play
 ##z : zoom to selection
 ##shift + z : zoom out by factor of 10
-##more to come
+##h : show/hide control section
 ::
 Load an audio file from disk using the load button. Press the control button to show and hide a simple control panel with basic controls for playback rate and dB scaling.
 The three number boxes are display only and refer to the start and end of the selection in frames, and the duration of the selection in seconds.
@@ -58,6 +58,25 @@ Get or set the output bus for the BufPlayGui instance
 EXAMPLES::
 ​
 code::
-~bp = BufPlayGui.new(s, ~encodingGroup, ~hoaBusDict[\encodingBus])
+//sync example - proof of concept
+
+~syncBus = Bus.audio(s,1);
+
+~bp = BufPlayGui.new(s, s.defaultGroup, 0, ~syncBus);
+
+(
+SynthDef(\trig, {
+	var in = In.ar(~syncBus, 1);
+	var trig = Trig1.ar(in);
+	var sig = SinOsc.ar(440);
+	var env = EnvGen.ar(Env.perc(), trig, doneAction: 0);
+	Out.ar(0, sig * env);
+}).add;
+)
+
+x = Synth(\trig)
+
+//sine tone should play at the start of each loop/selection
+x.free
 ::
 ​
