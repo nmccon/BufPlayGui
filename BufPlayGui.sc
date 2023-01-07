@@ -40,7 +40,9 @@ BufPlayGui {
 		sfv.keyDownAction_{|view, char, modifiers, unicode, keycode, key|
 			var posData = [view.selections[0][0], (view.selections[0][0] + view.selections[0][1])] / view.numFrames;
 			unicode.switch(
-				32, { if(play.isPlaying, { this.prStop }, { this.prPlay(posData[0], posData[1], dbSpec.map(volKnob.value), rateSpec.map(rateKnob.value)) } ) },
+				32, {
+					if(play.isPlaying, {this.prStop}, {this.prPlay(posData[0], posData[1], dbSpec.map(volKnob.value), rateSpec.map(rateKnob.value))})
+				},
 				122, {
 					view.zoomToFrac(posData[1] - posData[0]);
 					view.scrollTo (posData[0]);
@@ -50,7 +52,7 @@ BufPlayGui {
 					view.zoom(10);
 				},
 				104, {
-					if(controlBtn.value==0, {controlBtn.valueAction_(1)}, if(controlBtn.value==1, {controlBtn.valueAction_(0)}))
+					if(controlBtn.value==0, {controlBtn.valueAction_(1) }, if(controlBtn.value==1, {controlBtn.valueAction_(0)}))
 				}
 			);
 		};
@@ -100,7 +102,7 @@ BufPlayGui {
 		.value_(rateSpec.unmap(1))
 		.action_({|kn|
 			if(play.isPlaying, {play.set(\rate, rateSpec.map(kn.value))});
-			rateNum.value_(rateSpec.map(kn.value));
+			rateNum.value_(rateSpec.map(kn.value)); //needs to display updated value scaled by playback rate
 		});
 
 		rateNum = NumberBox()
@@ -153,11 +155,11 @@ BufPlayGui {
 	}
 
 	prLoadBuf { |buf|
-		{
+		fork {
 			buffer = Buffer.read(server, buf);
 			server.sync;
 			sf.close;
-		}.fork;
+		};
 		this.prSetSfv
 	}
 
@@ -175,7 +177,7 @@ BufPlayGui {
 	prRanges {|start, end, dur|
 		boxes[0].value_(start);
 		boxes[1].value_(end);
-		boxes[2].value_(dur);
+		boxes[2].value_(dur); //needs to update to reflect change in rate!
 	}
 
 	getStartFrame {
@@ -187,7 +189,7 @@ BufPlayGui {
 	}
 
 	getDur {
-		^ boxes[2].value
+		^ boxes[2].value * rateNum.value.reciprocal
 	}
 
 	getDurFrames {
@@ -195,7 +197,7 @@ BufPlayGui {
 	}
 
 	getBufnum {
-		^buffer.bufnum
+		^ buffer.bufnum
 	}
 
 	getSynthName {
@@ -207,7 +209,7 @@ BufPlayGui {
 	}
 
 	player {
-		^{	|lo = 0, hi = 1, amp = 1, rate = 1|
+		^ {	|lo = 0, hi = 1, amp = 1, rate = 1|
 			var phasor, derivative;
 			phasor = Phasor.ar(0, rate * BufRateScale.kr(buffer), lo * BufFrames.kr(buffer), hi * BufFrames.ir(buffer));
 			derivative = HPZ1.ar(phasor);
