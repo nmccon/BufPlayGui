@@ -78,5 +78,33 @@ x = Synth(\trig)
 
 //sine tone should play at the start of each loop/selection
 x.free
+
+//sync to record - not really necessary, but it seems to work
+
+~out2chan = Bus.audio(s, 2)
+
+~bp.outbus_(~out2chan)
+
+b = Buffer.alloc(s, s.sampleRate * ~bp.getDur, 2)
+
+(
+SynthDef(\rec, {
+	var audio = In.ar(~out2chan, 2);
+	var sync = In.ar(~syncBus);
+	var trig = ToggleFF.ar(sync);
+	RecordBuf.ar(audio, b.bufnum, run: trig, loop: 0) * EnvGen.ar(Env.cutoff(0.01), gate: trig, doneAction: 2);
+	Out.ar(0, audio);
+}).add;
+)
+
+y = Synth(\rec, addAction: 'addToTail')
+
+b.plot
+b.duration
+b.play
+b.zero
+b.free
+
+b.write("...")
 ::
 ​
