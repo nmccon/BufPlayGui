@@ -106,5 +106,29 @@ b.zero
 b.free
 
 b.write("...")
+
+//Use BufPlayGui as an editor/helper for selecting regions for use in other processes.
+b = Buffer.read(s, ....) load same file as BufPlayGui into buffer or use .getBufnum method
+(
+SynthDef(\bufRdEnvRegion, {|buffer = 0, rate = 1, t_gate = 1, t_trig = 0.0, start = 0.0, end = 1.0, out = 0|
+	var sig, env, dursecs, bufFrames;
+	dursecs = ((end - start)/BufSampleRate.kr(buffer)) * rate.reciprocal;
+	env = EnvGen.kr(Env([0, 1, 1, 0], [0.03, dursecs - 0.06, 0.03], \sine), t_gate, doneAction: 2);
+	sig = BufRd.ar(2, buffer, Phasor.ar(t_trig, rate * BufRateScale.kr(buffer), start, end, start)) * env;
+	Out.ar(out, sig);
+}).add
+)
+
+(
+p = Pbind(
+	\instrument, \bufRdEnvRegion,
+	\buffer, b,
+	\rate, Pwhite(0.5, 4),
+	\start, ~bp.getStartFrame,
+	\end, ~bp.getEndFrame,
+	\dur, Pfunc({|ev| (ev.end - ev.start)/ev.buf.sampleRate * ev.rate.reciprocal}), //no overlap - exactly 1 region.
+	\out, 0,
+)
+)
 ::
 ​
