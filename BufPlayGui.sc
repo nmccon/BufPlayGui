@@ -208,6 +208,10 @@ BufPlayGui {
 		^ play.nodeID
 	}
 
+	getBufAccess {
+		^Buffer.cachedBufferAt(server, buffer.bufnum)
+	}
+
 	player {
 		^ {	|lo = 0, hi = 1, amp = 1, rate = 1|
 			var phasor, derivative;
