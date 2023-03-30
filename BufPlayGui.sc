@@ -180,6 +180,21 @@ BufPlayGui {
 		boxes[2].value_(dur); //needs to update to reflect change in rate!
 	}
 
+	bufFromSelections {|tempBuf, numChans = -1| //requires flucoma library
+		FluidBufCompose.processBlocking(
+			server: server,
+			source: this.getBufnum,
+			startFrame: this.getStartFrame,
+			numFrames: this.getDurFrames,
+			startChan: 0,
+			numChans: numChans,
+			gain: 1,
+			destination: tempBuf,
+			destStartFrame: tempBuf.numFrames,
+			action: {"done".postln}
+		)
+	}
+
 	getStartFrame {
 		^ boxes[0].value
 	}
