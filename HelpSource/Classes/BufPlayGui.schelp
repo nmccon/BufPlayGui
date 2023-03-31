@@ -49,6 +49,12 @@ Return duration in seconds - useful for processing later in the signal path
 METHOD:: getDurFrames
 Return duration of selection in frames - useful for processing later in the signal path
 
+METHOD:: getBufAccess
+call Buffer.cachedBufferAt on the BufPlayGui buffer. Useful for getting more than just bufnum
+
+METHOD:: bufFromSelections
+Requires Flucoma Library. Copy selection to separate buffer external to BufPlayGui. numChans -1 is all channels.
+
 METHOD:: group
 Get or set the group for the BufPlayGui instance
 
@@ -130,5 +136,10 @@ p = Pbind(
 	\out, 0,
 )
 )
+
+write BufPlayGui to a buffer and analyse that selection only
+~tempBuf= Buffer(s);
+~bp.bufFromSelections(~tempBuf, numChans: -1)
+
 ::
 ​
