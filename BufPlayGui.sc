@@ -1,11 +1,12 @@
 BufPlayGui {
+	classvar win, sfv, open, boxes, controlView, controlBtn;
+	classvar volKnob, volNum, rateKnob, rateNum;
+	classvar buffer, player, play, responder;
+	classvar sf;
+	classvar dbSpec, rateSpec;
+	classvar stringCol, backCol;
+
 	var server, <>group, <>outbus, <>syncbus;
-	var win, sfv, open, boxes, controlView, controlBtn;
-	var volKnob, volNum, rateKnob, rateNum;
-	var buffer, player, play, responder;
-	var sf;
-	var dbSpec, rateSpec;
-	var stringCol, backCol;
 
 	*new { |server, group, outbus, syncbus|
 		var serverWarning = false;
@@ -14,15 +15,16 @@ BufPlayGui {
 			serverWarning = true
 		});
 
-		^super.newCopyArgs(server, group, outbus, syncbus).prInitGUI;
+		^super.newCopyArgs(server, group, outbus, syncbus).init;
 	}
 
-	prInitGUI {
+	init {
 		sf = SoundFile();
 		dbSpec = ControlSpec(-inf, 6, 'db', 0.0, 0, " dB");
 		rateSpec = ControlSpec(0.125, 8.0, \exp, 0, 1);
 		stringCol = Color(0.811764705882353, 0.913725490196078, 0.925490196078431);
 		backCol = Color(0.2, 0.2, 0.2);
+
 		//sfv
 		sfv = SoundFileView()
 		.peakColor_(stringCol)
@@ -143,13 +145,20 @@ BufPlayGui {
 			controlView.visible = btn.value.asBoolean;
 		});
 
+		this.prInitGUI(open, sfv, boxes[0], boxes[1], boxes[2], controlView)
+	}
+
+	prInitGUI {|...views|
+		views.postln;
+
 		//GUI window
 		win = Window("", Rect(906.0, 686.0, 611.0, 263.0)).front.background_(backCol)
 		.layout_(GridLayout.rows(
-			[ [open, columns: 1], nil, nil, nil, [controlBtn, columns: 1]],
-			[ [sfv, columns: 6] ],
-			[ [boxes[0], columns: 2, ],[boxes[1], columns: 2, ], [boxes[2], columns: 2, ]],
-			[ [controlView, columns: 4]]
+			[ [views[0], columns: 1], nil, nil, nil, [controlBtn, columns: 1]],
+			[ [views[1], columns: 6] ],
+			[ [views[2], columns: 2, ],[views[3], columns: 2, ], [views[4], columns: 2, ]],
+			[ [views[5], columns: 4]]
+
 		))
 		.onClose_({buffer.free; play = nil});
 	}
@@ -250,17 +259,6 @@ BufPlayGui {
 		if(play.isPlaying, {play.free});
 	}
 
+
 }
 
-/*
-TODO
-
-possibly add envelope view for creating volume envs on the view using StackLayout? - hard!
-time grid - even harder!
-maybe a random button to select audio file at random from a folder
-filter section in the control window
-call playfunc when changing selection instead of replaying every new selection
-move varibles into initGUI method
-MIDI learn function for controls
-more control options
-*/
