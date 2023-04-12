@@ -6,7 +6,7 @@ BufPlayGui {
 	classvar dbSpec, rateSpec;
 	classvar stringCol, backCol;
 
-	var server, <>group, <>outbus, <>syncbus;
+	var server, <>group, <>outbus, <>syncbus, recBuffer;
 
 	*new { |server, group, outbus, syncbus|
 		var serverWarning = false;
@@ -149,8 +149,6 @@ BufPlayGui {
 	}
 
 	prInitGUI {|...views|
-		views.postln;
-
 		//GUI window
 		win = Window("", Rect(906.0, 686.0, 611.0, 263.0)).front.background_(backCol)
 		.layout_(GridLayout.rows(
@@ -259,6 +257,33 @@ BufPlayGui {
 		if(play.isPlaying, {play.free});
 	}
 
+	recBufAlloc {/*|numChans = 2|*/
+		recBuffer = Buffer.alloc(server, server.sampleRate * this.getDur, sf.numChannels);
+		^recBuffer;
+	}
 
+	recBufFree {
+		^recBuffer.free;
+	}
+
+	recBufSynth {
+		^ {
+			var audio = In.ar(this.outbus, sf.numChannels);
+			var sync = In.ar(this.syncbus);
+			var trig = ToggleFF.ar(sync);
+			RecordBuf.ar(audio, recBuffer, run: trig, loop: 0) * EnvGen.ar(Env.cutoff(0.01), gate: trig, doneAction: 2);
+			Out.ar(0, audio);
+		}.play(target: group, addAction: 'addToTail')
+	}
+
+	recBufWrite {|path, headerFormat = "WAV", sampleFormat = "int24"|
+		fork{
+			recBuffer.write(path: path, headerFormat: headerFormat, sampleFormat: sampleFormat);
+			server.sync;
+			this.recBufFree;
+			"recBuffer written to disk and freed from server. Reallocate by calling recBufAlloc before next recording".warn;
+		}
+	}
 }
+
 

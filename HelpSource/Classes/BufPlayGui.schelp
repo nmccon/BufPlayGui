@@ -60,6 +60,18 @@ Get or set the group for the BufPlayGui instance
 
 METHOD:: outbus
 Get or set the output bus for the BufPlayGui instance
+
+METHOD:: recBufAlloc
+Allocate a buffer for recording. A selection must be made before calling this method. The number of frames for this buffer is determined by the selection duration and the playback rate.
+
+METHOD:: recBufFree
+Free the recording buffer. This happens automatically after writing the recording buffer to disk.
+
+METHOD:: recBufSynth
+Create a recording synth at the tail of the group. This synth is freed after the selection has played through once.
+
+METHOD:: recBufWrite
+write the the recording buffer to disk and then free it.
 ​
 EXAMPLES::
 ​
@@ -140,6 +152,12 @@ p = Pbind(
 write BufPlayGui to a buffer and analyse that selection only
 ~tempBuf= Buffer(s);
 ~bp.bufFromSelections(~tempBuf, numChans: -1)
+
+//after making a selection and chosing a playback rate, it is possible to save that selection to disk.
+
+~bp.recBufAlloc
+~bp.recBufSynth
+~bp.recBufWrite("~/".standardizePath+/+"Desktop/Selection.wav")
 
 ::
 ​
