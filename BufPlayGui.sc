@@ -5,8 +5,11 @@ BufPlayGui {
 	classvar sf;
 	classvar dbSpec, rateSpec;
 	classvar stringCol, backCol;
+	classvar recBuffer;
 
-	var server, <>group, <>outbus, <>syncbus, recBuffer;
+
+	var server, <>group, <>outbus, <>syncbus;
+	//var recBuffer;
 
 	*new { |server, group, outbus, syncbus|
 		var serverWarning = false;
