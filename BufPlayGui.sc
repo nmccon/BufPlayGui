@@ -1,3 +1,10 @@
+/*
+TODO
+reinstantiate group after pressing CMD period
+update duration box to reflect changes in playback rate
+possibly create a player i.e. several GUI instances in one window with output control
+many more
+*/
 BufPlayGui {
 	classvar win, sfv, open, boxes, controlView, controlBtn;
 	classvar volKnob, volNum, rateKnob, rateNum;
