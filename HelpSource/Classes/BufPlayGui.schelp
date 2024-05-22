@@ -140,11 +140,11 @@ SynthDef(\bufRdEnvRegion, {|buffer = 0, rate = 1, t_gate = 1, t_trig = 0.0, star
 (
 p = Pbind(
 	\instrument, \bufRdEnvRegion,
-	\buffer, b,
+	\buffer, ~bp.getBufAccess,
 	\rate, Pwhite(0.5, 4),
 	\start, ~bp.getStartFrame,
 	\end, ~bp.getEndFrame,
-	\dur, Pfunc({|ev| (ev.end - ev.start)/ev.buf.sampleRate * ev.rate.reciprocal}), //no overlap - exactly 1 region.
+	\dur, Pfunc({|ev| (ev.end - ev.start)/ev.buffer.sampleRate * ev.rate.reciprocal}), //no overlap - exactly 1 region.
 	\out, 0,
 )
 )
